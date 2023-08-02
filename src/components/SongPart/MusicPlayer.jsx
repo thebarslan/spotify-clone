@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setControls } from "../../stores/player";
 
 const MusicPlayer = () => {
      const audioPlayer = useRef();
      const [isPlaying, setIsPlaying] = useState(false);
+     const [audioSrc, setAudioSrc] = useState("");
      const [currentTime, setCurrentTime] = useState(0);
      const [curTimeInt, setCurTimeInt] = useState(0);
      const [isDragging, setIsDragging] = useState(false);
@@ -29,6 +32,13 @@ const MusicPlayer = () => {
                return duration;
           }
      };
+     const { current } = useSelector((state) => state.player);
+     useEffect(() => {
+          if (current !== false) {
+               console.log(current);
+               playAndStop({ audioSource: current });
+          }
+     }, [current]);
      useEffect(() => {
           if (isPlaying) {
                setInterval(() => {
@@ -39,12 +49,14 @@ const MusicPlayer = () => {
                }, 500);
           }
      }, [isPlaying]);
-     const playAndStop = () => {
+     const playAndStop = ({ audioSource }) => {
           if (isPlaying) {
                audioPlayer.current.pause();
                setIsPlaying(!isPlaying);
                return;
           }
+          if (audioSource === false && audioSource === "") return;
+          setAudioSrc(audioSource.toString());
           audioPlayer.current.play();
           setIsPlaying(!isPlaying);
           return;
@@ -77,11 +89,7 @@ const MusicPlayer = () => {
      };
      return (
           <>
-               <audio
-                    ref={audioPlayer}
-                    src="https://cdns-preview-5.dzcdn.net/stream/c-5e1529c5e8bd52c8d5d04df256eb6cc9-15.mp3"
-                    type="audio/mp3"
-               ></audio>
+               <audio ref={audioPlayer} src={audioSrc} type="audio/mp3"></audio>
                <div className="flex-[3] h-full w-full flex items-center flex-col py-2 gap-2">
                     <div className="icons flex gap-6 w-auto h-auto items-center">
                          <svg
@@ -114,7 +122,11 @@ const MusicPlayer = () => {
                                    d="M3.3 1a.7.7 0 0 1 .7.7v5.15l9.95-5.744a.7.7 0 0 1 1.05.606v12.575a.7.7 0 0 1-1.05.607L4 9.149V14.3a.7.7 0 0 1-.7.7H1.7a.7.7 0 0 1-.7-.7V1.7a.7.7 0 0 1 .7-.7h1.6z"
                               ></path>
                          </svg>
-                         <button onClick={playAndStop}>
+                         <button
+                              onClick={() =>
+                                   playAndStop({ audioSource: current })
+                              }
+                         >
                               <div className="start-stop-icon w-8 h-8 bg-white rounded-full flex items-center justify-center">
                                    {!isPlaying ? (
                                         <svg

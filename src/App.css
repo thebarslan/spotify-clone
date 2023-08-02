@@ -28,7 +28,7 @@ input[type="range"]::-moz-range-track {
 input[type="range"]::-ms-fill-upper {
      background-color: #9a905d;
 } */
-*/ a {
+a {
      text-decoration: none !important;
 }
 .playbutton {
